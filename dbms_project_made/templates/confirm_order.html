@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Order</title>
+</head>
+<body>
+    <h1>Confirm Order</h1>
+    
+    <p>Total amount is: {{ total_cost }}</p>
+    
+    <form method="POST" action="{{ url_for('place_order_confirm') }}">
+        <input type="hidden" name="total_cost" value="{{ total_cost }}">
+        <p>Are you sure you want to place the order?</p>
+        <label for="confirmation_yes">
+            <input type="radio" id="confirmation_yes" name="confirmation" value="yes"> Yes
+        </label>
+        <label for="confirmation_no">
+            <input type="radio" id="confirmation_no" name="confirmation" value="no"> No
+        </label>
+        <br>
+        <input type="submit" value="Place Order">
+        <input type="button" value="Cancel" onclick="location.href='{{ url_for('cart') }}';">
+    </form>
+</body>
+</html>

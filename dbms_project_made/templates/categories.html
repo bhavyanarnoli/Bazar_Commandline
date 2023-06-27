@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Categories</title>
+    <style>
+        
+         .navbar {
+            background-color: #FF94BF;
+            color: #fff;
+            padding: 0px;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+          .myNav {
+            background-color: #FF94BF;
+            position: absolute;
+            top: 0vh;
+            padding: 20px 100px 20px 400px;  
+        }
+        
+        .myNav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center; /* Add this line to vertically center the elements */
+        }
+
+        .myNav ul h5 {
+            margin: 0;
+            color: #fff;
+            font-size: 20px;
+            margin-left: 10px; /* Adjust the left margin as per your preference */
+        }
+
+        
+
+        .myNav ul li {
+            margin-left: 100px;
+        }
+        
+        .myNav ul li a {
+            text-decoration: none;
+            color: white;
+            width: 60px;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #FF94BF, #82E1FF);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        select {
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            padding: 5px 15px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+           
+            padding: 10px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        form.add-to-cart {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+     <nav class="myNav">
+        
+        <ul>
+            <h5> BAZAR</h5>
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact/<name>">Contact</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Signup</a></li>
+            <li><a href="/cart">Cart</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Product Categories</h1>
+        <form method="POST" action="/categories">
+            <label for="category">Select Category:</label>
+            <select name="category" id="category" required>
+                {% for category in categories %}
+                <option value="{{ category[1] }}">{{ category[1] }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Submit">
+        </form>
+
+        {% if products %}
+        <h2>Products in the Category:</h2>
+        <ul>
+            {% for product in products %}
+            <li>{{ product[1] }} - Price: {{ product[2] }} - Availability: {{ product[3] }}
+                <form class="add-to-cart" method="POST" action="/add_to_cart">
+                    <input type="hidden" name="product_id" value="{{ product[0] }}">
+                    <input type="number" name="quantity" min="1" value="1" required>
+                    <input type="submit" value="Add to Cart">
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

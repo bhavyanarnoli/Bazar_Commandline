@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orders</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #FF94BF, #82E1FF);
+        }
+
+        .navbar {
+            background-color: #FF94BF;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 5px;
+            margin-top: 50px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table th, table td {
+            padding: 10px;
+        }
+
+        table th {
+            background-color: #FF94BF;
+            color: #fff;
+        }
+
+        table td {
+            background-color: #f9f9f9;
+        }
+
+        p.empty-orders {
+            text-align: center;
+            font-style: italic;
+        }
+
+        a.back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #FF94BF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>BUYZAR</h1>
+    </nav>
+    <div class="container">
+        <h1>Orders</h1>
+
+        {% if orders %}
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Order Position</th>
+                <th>Order Cost</th>
+            </tr>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order[0] }}</td>
+                <td>{{ order[1] }}</td>
+                <td>{{ order[2] }}</td>
+                <td>{{ order[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty-orders">You have no orders.</p>
+        {% endif %}
+
+        <a class="back-link" href="{{ url_for('categories') }}">Back to Categories</a>
+    </div>
+</body>
+</html>

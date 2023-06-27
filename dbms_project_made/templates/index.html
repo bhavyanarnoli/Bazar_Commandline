@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Categories</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/navbar.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .navbar {
+            background-color: #FF94BF;
+            color: #fff;
+            padding: 10px;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+        .myNav {
+            position: absolute;
+            top: 5vh;
+            right: 8%;
+        }
+        
+        .myNav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        
+        .myNav ul li {
+            margin-left: 100px;
+        }
+        
+        .myNav ul li a {
+            text-decoration: none;
+            color: white;
+        }
+        body {
+            background: linear-gradient(135deg, #FF94BF, #82E1FF);
+        }
+        .main-image {
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .main-image img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body >
+    <nav class="myNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact/<name>">Contact</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/cart">Cart</a></li>
+        </ul>
+    </nav>
+    <div class="navbar">
+        <h1>BUYZAR</h1>
+    </div>
+      <div class="main-image">
+        <h1>Product Categories</h1>
+
+        <label for="category">Select Category:</label>
+        <select name="category" id="category" required>
+            {% for category in categories %}
+            <option value="{{ category[1] }}">{{ category[1] }}</option>
+            {% endfor %}
+        </select>
+        
+    {% if products %}
+    <h2>Products in the Category:</h2>
+    <ul>
+        {% for product in products %}
+        <li>{{ product[1] }} - Price: {{ product[2] }} - Availability: {{ product[3] }}
+            
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    </div>
+
+</body>
+</html>

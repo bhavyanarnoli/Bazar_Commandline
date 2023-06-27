@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+       
+         .navbar {
+            background-color: #FF94BF;
+            color: #fff;
+            padding: 0px;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+          .myNav {
+            background-color: #FF94BF;
+            position: absolute;
+            top: 0vh;
+            padding: 20px 100px 20px 400px;  
+        }
+        
+        .myNav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        .myNav ul h5{
+            margin: 0;
+            top: 100vh;
+            left: -10px;
+            color: #fff;  
+            font-size: 20px;
+
+        }
+        
+
+        .myNav ul li {
+            margin-left: 100px;
+        }
+        
+        .myNav ul li a {
+            text-decoration: none;
+            color: white;
+            width: 60px;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #FF94BF, #82E1FF);
+        }
+
+        .container {
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        h1 {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin-top: 0;
+        }
+        h2{
+            top: -4vh;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin-left: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-label span {
+            margin-right: 10px;
+            min-width: 100px;
+        }
+
+        input[type="submit"] {
+            margin-top: 20px;
+            align-self: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <nav class="myNav">
+        
+        <ul>
+            <h5> BAZAR</h5>
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact/<name>">Contact</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Signup</a></li>
+            <li><a href="/cart">Cart</a></li>
+
+        </ul>
+    </nav>
+    <div class="navbar">
+
+    </div>
+
+    <div class="container">
+        <h1>Sign Up</h1>
+        <form method="POST" action="/signup">
+            <div class="form-label">
+                <span>First Name:</span>
+                <input type="text" name="firstname" id="firstname" required>
+            </div>
+            <div class="form-label">
+                <span>Last Name:</span>
+                <input type="text" name="lastname" id="lastname" required>
+            </div>
+            <div class="form-label">
+                <span>Phone No.:</span>
+                <input type="text" name="phoneno" id="phoneno" required>
+            </div>
+            <div class="form-label">
+                <span>Email:</span>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="form-label">
+                <span>Username:</span>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="form-label">
+                <span>Password:</span>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="form-label">
+                <span>Address:</span>
+                <input type="text" name="address" id="address" required>
+            </div>
+            <br>
+            <input type="submit" value="Sign Up">
+        </form>
+    </div>
+</body>
+</html>

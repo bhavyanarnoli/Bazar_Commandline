@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart</title>
+</head>
+<body>
+    <h1>Cart</h1>
+    
+    {% if cart_items %}
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[1] * item[2] }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3">Total Amount:</td>
+            <td>{{ total_amount }}</td>
+        </tr>
+    </table>
+    
+    <form method="POST" action="{{ url_for('place_order') }}" onsubmit="return confirmOrder()">
+        <input type="submit" value="Place Order">
+    </form>
+    {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %}
+    
+    <a href="{{ url_for('categories') }}">Back to Categories</a>
+
+    <script>
+        function confirmOrder() {
+            return confirm("Are you sure you want to place the order?");
+        }
+    </script>
+</body>
+</html>
