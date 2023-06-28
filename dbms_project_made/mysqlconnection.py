@@ -2,13 +2,13 @@ from flask import Flask, render_template, request, flash , url_for , redirect ,s
 from flask_mysqldb import MySQL
 # from flask import date
 from datetime import date
-
+import datetime 
 app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'bhavya'
-app.config['MYSQL_DB'] = 'bazar'
+app.config['MYSQL_DB'] = 'bazar3'
 
 mysql = MySQL(app)
 
@@ -152,7 +152,7 @@ def add_to_cart():
 def orders():
     if userfound:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM bazar.orders WHERE cart_link = %s", (customer,))
+        cur.execute("SELECT * FROM bazar3.orders WHERE cart_link = %s", (customer,))
 
         orders = cur.fetchall()
         cur.close()
@@ -181,14 +181,15 @@ def cart():
             d1 = today.strftime("%Y-%m-%d")
             
             cur = mysql.connection.cursor()
-            cur.execute("SELECT MAX(order_ID) FROM bazar.order")
+            cur.execute("SELECT MAX(order_ID) FROM bazar3.order")
             result = cur.fetchone()
             max_order_id = result[0]
             order_id = max_order_id + 1 if max_order_id else 1
 
-            cur.execute("INSERT INTO bazar.order (order_ID, order_date, order_position, order_cost, CustomerID) VALUES (%s, %s, 'shipped', %s, %s)", (order_id, d1, total_amount, customer))
+            cur.execute("INSERT INTO bazar3.order (order_ID, order_date, order_position, order_cost, CustomerID) VALUES (%s, %s, 'shipped', %s, %s)", (order_id, d1, total_amount, customer))
             mysql.connection.commit()
-
+            cur.execute("INSERT INTO bazar3.payment (order_ID, order_date, order_position, order_cost, CustomerID) VALUES (%s, %s, 'shipped', %s, %s)", (order_id, d1, total_amount, customer))
+            mysql.connection.commit()
             cur.execute("DELETE FROM cart WHERE idcart = %s", (customer,))
             mysql.connection.commit()
 
@@ -238,50 +239,52 @@ def place_order_confirm():
     if confirmation == 'yes':
         position = 'shipped'
         
-        cur.execute("SELECT COALESCE(MAX(order_ID), 0) FROM bazar.order")
-        max_order_id = cur.fetchone()[0]
-        order_id = max_order_id + 1
-        
-        cur.execute("SELECT COALESCE(MAX(paymentID), 0) FROM bazar.payment")
+        cur.execute(
+        "INSERT INTO `order` (`order_id`, `order_date`, `order_position`, `order_cost`, `cart_link`) "
+        "SELECT IFNULL(MAX(o.`order_id`), 0) + 1, %s, %s, %s, %s "
+        "FROM (SELECT * FROM `order`) o",
+        (tday, 'shipped', float(total_cost), customer),
+    )
+    
+
+        mysql.connection.commit()
+    cur.execute("SELECT MAX(order_id) FROM `order`")
+    max_order_id = cur.fetchone()[0]
+    order_id = max_order_id + 1
+
+    try:
+        cur.execute("SELECT COALESCE(MAX(paymentID), 0) FROM bazar3.payment LIMIT 1")
         max_pay_id = cur.fetchone()[0]
         pay_id = max_pay_id + 1
         
-        cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar.delivery_person")
-        max_del_id = cur.fetchone()[0]
-        del_id = max_del_id + 1
-        print(" " ,order_id  )
-        print( " ",tday )
-        print(" ",pay_id )
-        print(" ", del_id)
-        print( " ",customer)
+        
         cur.execute(
-            "INSERT INTO bazar.order (order_ID, order_date, order_position, order_cost, cart_link) "
-            "SELECT %s, %s, %s, %s, %s FROM dual WHERE NOT EXISTS (SELECT 1 FROM bazar.order)",
-            (order_id, tday, position, total_cost, customer),
-        )
-        mysql.connection.commit()
-    try:
-        cur.execute(
-            "INSERT INTO bazar.payment(paymentID, paymentdate, Payment_amount, order_id, user_id) "
+            "INSERT INTO bazar3.payment(paymentID, paymentdate, Payment_amount, order_id, user_id) "
             "VALUES (%s, %s, %s, %s, %s)",
-            (pay_id, tday, total_cost, order_id, customer),
+            (pay_id, tday, float(total_cost), order_id, customer),
         )
         mysql.connection.commit()
     except Exception as e:
-        print("Error occurred while inserting into bazar.payment:", str(e))
+        print("Error occurred while inserting into bazar3.payment:", str(e))
         
+    cur.execute("SELECT LAST_INSERT_ID()")
+    order_id = cur.fetchone()[0]
+    
         
+    try:
+        cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar3.delivery_person LIMIT 1")
+        max_del_id = cur.fetchone()[0]
+        del_id = max_del_id + 1
         name = "Delivery"
         phone = "9393933939"
-    try:
         cur.execute(
-            "INSERT INTO bazar.delivery_person(id, name, phone, orderid) "
+            "INSERT INTO bazar3.delivery_person(id, name, phone, orderid) "
             "VALUES (%s, %s, %s, %s)",
             (del_id, name, phone, order_id),
         )
         mysql.connection.commit()
     except Exception as e:
-        print("Error occurred while inserting into bazar.del:", str(e))
+        print("Error occurred while inserting into bazar3.del:", str(e))
         cur.close()
 
        
@@ -290,78 +293,6 @@ def place_order_confirm():
 
     flash('Please log in first.')
     return redirect(url_for('login'))
-
-# @ap.route('/place_order', methods=['POST'])
-# defplace_order():
-# if userfound:
-#     tday = datetime.date.today()
-
-#     cur = mysql.connection.cursor()
-#     cur.execute(
-#         "SELECT product.product_ID, product.price, cart.product_quantity "
-#         "FROM cart "
-#         "INNER JOIN product ON cart.product_ID = product.product_ID "
-#         "WHERE cart.idcart = %s",
-#         (customer,),
-#     )
-
-#     cart_items = cur.fetchall()
-
-#     total_cost = sum(item[1] * item[2] for item in cart_items)  Calulate total cost
-
-#    Modfy this part to use a confirmation dialog instead of input()
-#     print("Total amount is:", total_cost)
-#     print("Are you sure you want to place the order? (Y/N)")
-#     inx = input().upper()
-
-#     if inx == "Y":
-#         position = 'shipped'
-
-#         cur.execute("SELECT COALESCE(MAX(order_ID), 0) FROM bazar.order LIMIT 1")
-#         max_order_id = cur.fetchone()[0]
-#         order_id = max_order_id + 1
-
-#         cur.execute("SELECT COALESCE(MAX(paymentID), 0) FROM bazar.payment LIMIT 1")
-#         max_pay_id = cur.fetchone()[0]
-#         pay_id = max_pay_id + 1
-
-#         cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar.delivery_person LIMIT 1")
-#         max_del_id = cur.fetchone()[0]
-#         del_id = max_del_id + 1
-
-#         cur.execute(
-#             "INSERT INTO bazar.order (order_ID, order_date, order_position, order_cost, cart_link) "
-#             "VALUES (%s, %s, %s, %s, %s)",
-#             (order_id, tday, position, total_cost, customer),
-#         )
-#         mysql.connection.commit()
-
-#         cur.execute(
-#             "INSERT INTO bazar.payment(paymentID, paymentdate, Payment_amount, order_id, user_id) "
-#             "VALUES (%s, %s, %s, %s, %s)",
-#             (pay_id, tday, total_cost, order_id, customer),
-#         )
-#         mysql.connection.commit()
-            
-#         name = "DelIVERy"
-#         phone = 9393933939
-#         cur.execute(
-#             "INSERT INTO bazar.delivery_person(id , name ,phone , orderid) "
-#             "VALUES (%s, %s, %s, %s, %s)",
-#             (del_id, name , phone, order_id),
-#         )
-#         mysql.connection.commit()
-            
-#         cur.close()
-
-#         flash('Order placed successfully!')
-#         return redirect(url_for('cart'))
-
-# flash('Please log in first.')
-# return redirect(url_for('login'))
-
-
-# aveto complete the order, payment and delivery thing mainly.
 
 
 
