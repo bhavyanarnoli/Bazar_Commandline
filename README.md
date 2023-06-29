@@ -1,8 +1,8 @@
-# Bazar
+# BuyZar
 
--Designed and developed a retail store shop with a database of inventory items and integrated by using table schemas .
+- Designed and developed a retail store shop with a database of inventory items and integrated by using table schemas .
 
--Devised the entity-relationship model and proliferated the efficiency of the database by making use of techniques of query optimisation
+- Devised the entity-relationship model and proliferated the efficiency of the database by making use of techniques of query optimisation
 
 - Applied lock while entering data in order , payment and delivery to ensure rwrwrw to take place and no conflicts happen for wr
 
