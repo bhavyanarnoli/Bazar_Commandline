@@ -4,7 +4,8 @@ from flask_mysqldb import MySQL
 from datetime import date
 import datetime 
 app = Flask(__name__)
-
+import time
+import threading
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'bhavya'
@@ -65,7 +66,7 @@ def signup():
         print('Inserted 1 row')
 
         mysql.connection.commit()
-        cur.execute('INSERT INTO credentials(username, password, customerID) VALUES(%s, %s, %s)', (username, password, customerid))
+        cur.execute('INSERT INTO credentials(username, password, cust_ID) VALUES(%s, %s, %s)', (username, password, customerid))
         mysql.connection.commit()
         cur.close()
 
@@ -186,10 +187,50 @@ def cart():
             max_order_id = result[0]
             order_id = max_order_id + 1 if max_order_id else 1
 
-            cur.execute("INSERT INTO bazar3.order (order_ID, order_date, order_position, order_cost, CustomerID) VALUES (%s, %s, 'shipped', %s, %s)", (order_id, d1, total_amount, customer))
+            cur.execute("SELECT MAX(order_ID) FROM bazar3.order")
+            res = cur.fetchone()
+            max_payment_id = res[0]
+            pay_id = max_payment_id + 1 if max_payment_id else 1
+            
+            cur.execute("SELECT MAX(order_ID) FROM bazar3.order")
+            res = cur.fetchone()
+            max_payment_id = res[0]
+            pay_id = max_payment_id + 1 if max_payment_id else 1
+            
+            cur.execute("SELECT MAX(order_ID) FROM bazar3.delivery_person")
+            res = cur.fetchone()
+            max_delivery_id = res[0]
+            del_id = max_delivery_id + 1 if max_delivery_id else 1
+            
+            del_name = "imasomedeliveryperos"
+            del_phone = 9230230089
+            
+            lock = threading.Lock()
+
+            # Acquire the lock
+            lock.acquire()
+
+            try:
+                cur.execute("INSERT INTO bazar3.order (order_ID, order_date, order_position, order_cost, CustomerID) VALUES (%s, %s, 'shipped', %s, %s)", (order_id, d1, total_amount, customer))
+                mysql.connection.commit()
+                print(order_id)
+
+                # Release the lock
+                lock.release()
+
+                # Perform the payment and delivery inserts
+                cur.execute("INSERT INTO bazar3.payment (paymentID , paymentdate , Payment_amount, order_id, user_ID) VALUES (%s, %s, %s, %s, %s)", (pay_id, d1, total_amount, order_id, customer))
+                mysql.connection.commit()
+
+                cur.execute("INSERT INTO bazar3.delivery_person (id, name, phone, order_id) VALUES (%s, %s, %s, %s)", (del_id, del_name, del_phone, order_id))
+                mysql.connection.commit()
+
+            finally:
+                # Make sure to release the lock even if an exception occurs
+                lock.release()
+            cur.execute("INSERT INTO bazar3.delivery_person ( id , name , phone, order_id) VALUES (%s, %s, %s, %s)", (del_id, del_name, del_phone, order_id) )
             mysql.connection.commit()
-            cur.execute("INSERT INTO bazar3.payment (order_ID, order_date, order_position, order_cost, CustomerID) VALUES (%s, %s, 'shipped', %s, %s)", (order_id, d1, total_amount, customer))
-            mysql.connection.commit()
+            
             cur.execute("DELETE FROM cart WHERE idcart = %s", (customer,))
             mysql.connection.commit()
 
@@ -234,62 +275,73 @@ def place_order_confirm():
     total_cost = request.form.get('total_cost')
     confirmation = request.form.get('confirmation')
     cur = mysql.connection.cursor()
-    tday = datetime.date.today()
-    
-    if confirmation == 'yes':
-        position = 'shipped'
-        
-        cur.execute(
-        "INSERT INTO `order` (`order_id`, `order_date`, `order_position`, `order_cost`, `cart_link`) "
-        "SELECT IFNULL(MAX(o.`order_id`), 0) + 1, %s, %s, %s, %s "
-        "FROM (SELECT * FROM `order`) o",
-        (tday, 'shipped', float(total_cost), customer),
-    )
-    
-
-        mysql.connection.commit()
-    cur.execute("SELECT MAX(order_id) FROM `order`")
-    max_order_id = cur.fetchone()[0]
-    order_id = max_order_id + 1
-
+    d1 = datetime.date.today()
+    lock = threading.Lock()
+    lock.acquire()
     try:
-        cur.execute("SELECT COALESCE(MAX(paymentID), 0) FROM bazar3.payment LIMIT 1")
-        max_pay_id = cur.fetchone()[0]
-        pay_id = max_pay_id + 1
-        
-        
-        cur.execute(
-            "INSERT INTO bazar3.payment(paymentID, paymentdate, Payment_amount, order_id, user_id) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (pay_id, tday, float(total_cost), order_id, customer),
-        )
-        mysql.connection.commit()
-    except Exception as e:
-        print("Error occurred while inserting into bazar3.payment:", str(e))
-        
-    cur.execute("SELECT LAST_INSERT_ID()")
-    order_id = cur.fetchone()[0]
-    
-        
-    try:
-        cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar3.delivery_person LIMIT 1")
-        max_del_id = cur.fetchone()[0]
-        del_id = max_del_id + 1
-        name = "Delivery"
-        phone = "9393933939"
-        cur.execute(
-            "INSERT INTO bazar3.delivery_person(id, name, phone, orderid) "
-            "VALUES (%s, %s, %s, %s)",
-            (del_id, name, phone, order_id),
-        )
-        mysql.connection.commit()
-    except Exception as e:
-        print("Error occurred while inserting into bazar3.del:", str(e))
-        cur.close()
+        # Begin the transaction
+            cur.execute("START TRANSACTION")
+            cur.execute("SELECT MAX(order_id) FROM `order`")
+            max_order_id = cur.fetchone()[0]
+            order_id = max_order_id + 1
 
-       
-        flash('Order placed successfully!')
-        return redirect(url_for('cart'))
+            # Insert the order record
+            cur.execute(
+                "INSERT INTO bazar3.order (order_ID, order_date, order_position, order_cost, cart_link) "
+                "VALUES (%s, %s, 'shipped', %s, %s)",
+                (order_id, d1, total_cost, customer)
+            )
+
+            # Commit the order
+            mysql.connection.commit()
+            print("Order committed")
+            lock.release()
+            # Get the order ID
+            order_id = cur.fetchone()[0]
+            print(order_id)
+            
+            cur.execute("SELECT COALESCE(MAX(paymentID), 0) FROM bazar3.payment LIMIT 1")
+            max_pay_id = cur.fetchone()[0]
+            pay_id = max_pay_id + 1 
+            print(pay_id)
+            print(d1)
+            print(total_cost)
+            
+            print(order_id)
+            print(customer)
+        
+            # Insert the payment record
+            cur.execute(
+                "INSERT INTO bazar3.payment (paymentID, paymentdate, Payment_amount, order_id, user_ID) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                (pay_id, d1, total_cost, order_id, customer)
+            )
+
+            # Insert the delivery record
+            cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar3.delivery_person LIMIT 1")
+            max_del_id = cur.fetchone()[0]
+            del_id = max_del_id + 1
+            del_name = "Delivery"
+            del_phone = "9393933939"
+            cur.execute(
+                "INSERT INTO bazar3.delivery_person (id, name, phone, order_id) "
+                "VALUES (%s, %s, %s, %s)",
+                (del_id, del_name, del_phone, order_id)
+            )
+
+            # Commit the payment and delivery
+            mysql.connection.commit()
+            print("Payment and delivery committed")
+
+    except Exception as e:
+            # Rollback the transaction if an error occurs
+            mysql.connection.rollback()
+            print("Failed to insert payment record. Order ID:", order_id)
+            print("Transaction failed:", str(e))
+
+    finally:
+            # End the transaction    
+        mysql.connection.commit()
 
     flash('Please log in first.')
     return redirect(url_for('login'))
