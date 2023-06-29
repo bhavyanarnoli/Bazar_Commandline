@@ -278,73 +278,64 @@ def place_order_confirm():
     d1 = datetime.date.today()
     lock = threading.Lock()
     lock.acquire()
-    try:
+    
         # Begin the transaction
-            cur.execute("START TRANSACTION")
-            cur.execute("SELECT MAX(order_id) FROM `order`")
-            max_order_id = cur.fetchone()[0]
-            order_id = max_order_id + 1
+    cur.execute("START TRANSACTION")
+    cur.execute("SELECT MAX(order_id) FROM `order`")
+    max_order_id = cur.fetchone()[0]
+    order_id = max_order_id + 1
 
             # Insert the order record
-            cur.execute(
-                "INSERT INTO bazar3.order (order_ID, order_date, order_position, order_cost, cart_link) "
-                "VALUES (%s, %s, 'shipped', %s, %s)",
-                (order_id, d1, total_cost, customer)
-            )
+    cur.execute(
+        "INSERT INTO bazar3.order (order_ID, order_date, order_position, order_cost, cart_link) "
+        "VALUES (%s, %s, 'shipped', %s, %s)",
+        (order_id, d1, total_cost, customer)
+    )
 
             # Commit the order
-            mysql.connection.commit()
-            print("Order committed")
-            lock.release()
-            # Get the order ID
-            order_id = cur.fetchone()[0]
-            print(order_id)
+    mysql.connection.commit()
+    print("Order committed")
+    lock.release() 
+    # Get the order ID
+    
             
-            cur.execute("SELECT COALESCE(MAX(paymentID), 0) FROM bazar3.payment LIMIT 1")
-            max_pay_id = cur.fetchone()[0]
-            pay_id = max_pay_id + 1 
-            print(pay_id)
-            print(d1)
-            print(total_cost)
-            
-            print(order_id)
-            print(customer)
-        
-            # Insert the payment record
-            cur.execute(
-                "INSERT INTO bazar3.payment (paymentID, paymentdate, Payment_amount, order_id, user_ID) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (pay_id, d1, total_cost, order_id, customer)
-            )
+    cur.execute("SELECT MAX(paymentID) FROM `payment`")
+    max_pay_id = cur.fetchone()[0]
+    pay_id = max_pay_id + 1 
+    print(pay_id)
+    print(d1)
+    print(total_cost)
+    print(order_id)
+    print(customer)    
+    # Insert the payment record
+    cur.execute(
+        "INSERT INTO bazar3.payment (paymentID, paymentdate, Payment_amount, order_id, user_ID) "
+        "VALUES (%s, %s, %s, %s, %s)",
+        (pay_id, d1, total_cost, order_id, customer)
+    )
+    mysql.connection.commit()
 
-            # Insert the delivery record
-            cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar3.delivery_person LIMIT 1")
-            max_del_id = cur.fetchone()[0]
-            del_id = max_del_id + 1
-            del_name = "Delivery"
-            del_phone = "9393933939"
-            cur.execute(
-                "INSERT INTO bazar3.delivery_person (id, name, phone, order_id) "
+    # Insert the delivery record
+    cur.execute("SELECT MAX(id) FROM `delivery_person`")
+    # cur.execute("SELECT COALESCE(MAX(id), 0) FROM bazar3.delivery_person LIMIT 1")
+    max_del_id = cur.fetchone()[0]
+    del_id = max_del_id + 1
+    del_name = "Delivery"
+    del_phone = "9393933939"
+    cur.execute(
+                "INSERT INTO bazar3.delivery_person (id, name, phone, orderid) "
                 "VALUES (%s, %s, %s, %s)",
                 (del_id, del_name, del_phone, order_id)
             )
 
             # Commit the payment and delivery
-            mysql.connection.commit()
-            print("Payment and delivery committed")
+    mysql.connection.commit()
+    print("Payment and delivery committed")
 
-    except Exception as e:
-            # Rollback the transaction if an error occurs
-            mysql.connection.rollback()
-            print("Failed to insert payment record. Order ID:", order_id)
-            print("Transaction failed:", str(e))
-
-    finally:
-            # End the transaction    
-        mysql.connection.commit()
-
-    flash('Please log in first.')
-    return redirect(url_for('login'))
+  
+    
+    
+    return redirect(url_for('cart'))
 
 
 
