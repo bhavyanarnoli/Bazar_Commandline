@@ -153,12 +153,12 @@ def add_to_cart():
 def orders():
     if userfound:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM bazar3.orders WHERE cart_link = %s", (customer,))
+        cur.execute("SELECT * FROM bazar3.order WHERE cart_link = %s", (customer,))
 
         orders = cur.fetchall()
         cur.close()
 
-        return render_template('orders.html', orders=orders)
+        return render_template('order.html', orders=orders)
     else:
 
         return render_template('login.html', message = 'please login to see your orders')
@@ -331,15 +331,39 @@ def place_order_confirm():
             # Commit the payment and delivery
     mysql.connection.commit()
     print("Payment and delivery committed")
-
-  
-    
-    
-    return redirect(url_for('cart'))
+    return redirect(url_for('order_confirmation', order_id=order_id))
 
 
 
 
+@app.route('/order_confirmation/<order_id>')
+def order_confirmation(order_id):
+    # Fetch order details from the database based on the order_id
+    # You can use the order_id to retrieve relevant information and display it on the confirmation page
+    # For example:
+    # cur.execute("SELECT * FROM bazar3.order WHERE order_ID = %s", (order_id,))
+    # order = cur.fetchone()
+
+    # Render the order confirmation template
+    return render_template('order_done.html', order_id=order_id)
+
+
+@app.route('/orders')
+def view_orders():
+    cur = mysql.connection.cursor()
+    try:
+        # Create a cursor to execute SQL queries
+        if userfound:
+            # Retrieve orders from the database for a specific customer (cart_link)
+             # Replace with the actual cart_link value representing the customer
+            sql = "SELECT * FROM `order` WHERE `cart_link` = %s"
+            cur.execute(sql, (customer,))
+            orders = cur.fetchall()
+
+        return render_template('order.html', orders=orders)
+    finally:
+        # Close the database connection
+        cur.close()
 
 @app.route('/contact/<name>')
 def contact(name):

@@ -4,95 +4,144 @@
     <title>Orders</title>
     <style>
         body {
-            margin: 0;
+            margin: 100px;
             padding: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #FF94BF, #82E1FF);
         }
-
+        
         .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background-color: #FF94BF;
             color: #fff;
-            padding: 20px;
-            text-align: center;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
         }
-
+        
         .navbar h1 {
             margin: 0;
             padding: 0;
             color: #fff;
+            flex: 1;
         }
-
+        
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .orders-heading {
             text-align: center;
-            background-color: #fff;
-            border-radius: 5px;
-            margin-top: 50px;
+            margin-bottom: 20px;
         }
-
-        table {
+        
+        .orders-table {
+            margin-bottom: 20px;
             width: 100%;
+            border-collapse: collapse;
         }
-
-        table th, table td {
+        
+        .orders-table th,
+        .orders-table td {
             padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
         }
-
-        table th {
+        
+        .orders-table th {
             background-color: #FF94BF;
             color: #fff;
         }
-
-        table td {
-            background-color: #f9f9f9;
-        }
-
-        p.empty-orders {
-            text-align: center;
-            font-style: italic;
-        }
-
-        a.back-link {
+        
+        .back-link {
             display: block;
             margin-top: 20px;
-            text-align: center;
-            color: #FF94BF;
+            color: white;
+        }
+        
+        .myNav {
+            position: absolute;
+            right: 8%;
+        }
+        
+        .orders-table {
+            margin: 0 20px;
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+
+        
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        
+        .navbar ul li {
+            top: 0px;
+            margin-left: 100px;
+        }
+        
+        .navbar ul li a {
             text-decoration: none;
+            color: white;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #FF94BF, #82E1FF);
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
+   
+    <div class="navbar">
         <h1>BUYZAR</h1>
-    </nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact/<name>">Contact</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/cart">Cart</a></li>
+        </ul>
+    </div>
+    
     <div class="container">
-        <h1>Orders</h1>
-
+        <h1 class="orders-heading">Orders</h1>
+        
         {% if orders %}
-        <table>
+        <table class="orders-table">
             <tr>
                 <th>Order ID</th>
                 <th>Order Date</th>
                 <th>Order Position</th>
                 <th>Order Cost</th>
+                <th>Cart Link</th>
             </tr>
             {% for order in orders %}
             <tr>
-                <td>{{ order[0] }}</td>
-                <td>{{ order[1] }}</td>
-                <td>{{ order[2] }}</td>
-                <td>{{ order[3] }}</td>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>{{ order.order_position }}</td>
+                <td>{{ order.order_cost }}</td>
+                <td>{{ order.cart_link }}</td>
             </tr>
             {% endfor %}
         </table>
         {% else %}
-        <p class="empty-orders">You have no orders.</p>
+        <p>No orders available.</p>
         {% endif %}
-
-        <a class="back-link" href="{{ url_for('categories') }}">Back to Categories</a>
+        
+        <a href="{{ url_for('categories') }}" class="back-link">Back to Categories</a>
     </div>
+
 </body>
 </html>
