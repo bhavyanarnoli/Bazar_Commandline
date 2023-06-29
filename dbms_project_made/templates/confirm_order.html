@@ -2,24 +2,117 @@
 <html>
 <head>
     <title>Confirm Order</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .navbar {
+            background-color: #FF94BF;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        
+        .form-container h1 {
+            text-align: center;
+        }
+        
+        .form-container p {
+            text-align: center;
+        }
+        
+        .form-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .form-container input[type="radio"] {
+            margin-right: 5px;
+        }
+        
+        .form-container input[type="submit"],
+        .form-container input[type="button"] {
+            margin-top: 10px;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #FF94BF, #82E1FF);
+        }
+        
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        
+        .navbar ul li {
+            margin-left: 100px;
+        }
+        
+        .navbar ul li a {
+            text-decoration: none;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <h1>Confirm Order</h1>
+    <div class="navbar">
+        <h1>BUYZAR</h1>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href = /categories> Categories </li>
+            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/cart">Cart</a></li>
+            <li><a href="/orders>">Orders</a></li>
+        </ul>
+    </div>
     
-    <p>Total amount is: {{ total_cost }}</p>
-    
-    <form method="POST" action="{{ url_for('place_order_confirm') }}">
-        <input type="hidden" name="total_cost" value="{{ total_cost }}">
-        <p>Are you sure you want to place the order?</p>
-        <label for="confirmation_yes">
-            <input type="radio" id="confirmation_yes" name="confirmation" value="yes"> Yes
-        </label>
-        <label for="confirmation_no">
-            <input type="radio" id="confirmation_no" name="confirmation" value="no"> No
-        </label>
-        <br>
-        <input type="submit" value="Place Order">
-        <input type="button" value="Cancel" onclick="location.href='{{ url_for('cart') }}';">
-    </form>
+    <div class="container">
+        <div class="form-container">
+            <h1>Confirm Order</h1>
+            
+            <p>Total amount is: {{ total_cost }}</p>
+            
+            <form method="POST" action="{{ url_for('place_order_confirm') }}">
+                <input type="hidden" name="total_cost" value="{{ total_cost }}">
+                <p>Are you sure you want to place the order?</p>
+                <label for="confirmation_yes">
+                    <input type="radio" id="confirmation_yes" name="confirmation" value="yes"> Yes
+                </label>
+                <label for="confirmation_no">
+                    <input type="radio" id="confirmation_no" name="confirmation" value="no"> No
+                </label>
+                <br>
+                <input type="submit" value="Place Order">
+                <input type="button" value="Cancel" onclick="location.href='{{ url_for('cart') }}';">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

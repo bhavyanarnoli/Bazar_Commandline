@@ -3,11 +3,17 @@
 <head>
     <title>Product Categories</title>
     <style>
-        
-         .navbar {
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background-color: #FF94BF;
             color: #fff;
-            padding: 0px;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
         }
         
         .navbar h1 {
@@ -15,7 +21,8 @@
             padding: 0;
             color: #fff;
         }
-          .myNav {
+        
+        .myNav {
             background-color: #FF94BF;
             position: absolute;
             top: 0vh;
@@ -34,10 +41,8 @@
             margin: 0;
             color: #fff;
             font-size: 20px;
-            margin-left: 10px; /* Adjust the left margin as per your preference */
+            margin-left: -200px; /* Adjust the left margin as per your preference */
         }
-
-        
 
         .myNav ul li {
             margin-left: 100px;
@@ -48,6 +53,7 @@
             color: white;
             width: 60px;
         }
+        
         body {
             margin: 0;
             padding: 0;
@@ -91,7 +97,6 @@
         }
 
         li {
-           
             padding: 10px;
             border-radius: 3px;
             margin-bottom: 10px;
@@ -114,22 +119,26 @@
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 100px;
         }
     </style>
 </head>
 <body>
-     <nav class="myNav">
-        
-        <ul>
-            <h5> BAZAR</h5>
-            <li><a href="/">Home</a></li>
-            <li><a href="/contact/<name>">Contact</a></li>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/signup">Signup</a></li>
-            <li><a href="/cart">Cart</a></li>
-        </ul>
-    </nav>
+    <div class="navbar">
+        <h1>BUYZAR</h1>
+        <nav class="myNav">
+            <ul>
+                <h5>BAZAR</h5>
+                <li><a href="/">Home</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/categories">Categories</a></li>
+                <li><a href="/signup">Sign Up</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/orders">Orders</a></li>
+            </ul>
+        </nav>
+    </div>
+    
     <div class="container">
         <h1>Product Categories</h1>
         <form method="POST" action="/categories">
