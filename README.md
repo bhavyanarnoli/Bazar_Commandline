@@ -6,7 +6,7 @@
 
 - Applied lock while entering data in order , payment and delivery to ensure rwrwrw to take place and no conflicts happen for wr
 - Functions To
-- ADD PRODUCT IN CART(With quantity) / SEE PRODUCT CATEGORIES / SEE PRODUCTS IN PRODUCT CATEGORIES /  SEE CART/ORDERS  / ORDER FROM CART
+- ADD PRODUCT IN CART(With quantity) / SEE PRODUCT CATEGORIES / SEE PRODUCTS IN PRODUCT CATEGORIES /  SEE CART/ORDERS  / ORDER FROM CART / LOGIN / SIGNUP
 <img width="955" alt="image" src="https://github.com/bhavyanarnoli/Bazar_Commandline/assets/108413315/69b11cc6-0795-42bc-bd46-3e875422f0e8">
 <img width="945" alt="image" src="https://github.com/bhavyanarnoli/Bazar_Commandline/assets/108413315/0892bcdb-9217-40e9-b070-90e0bb01c94a">
 
